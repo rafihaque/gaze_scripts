@@ -1,0 +1,4 @@
+#!/bin/sh
+
+cd /home/haqueru/gaze_scripts; sh preprocess.sh /data/haqueru/gaze 00002 /home/haqueru/gaze_scripts/
+

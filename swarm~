@@ -1,0 +1,49 @@
+#!/bin/sh
+#SBATCH --mem=3g
+#SBATCH --cpus-per-task=4
+#SBATCH --error=/data/haqueru/gaze/preprocess.log
+#SBATCH --output=/data/haqueru/gaze/preproccess.log
+#SBATCH --time=04:00:00
+#SBATCH --gres=lscratch:1
+
+# FaceFrames-0b7da7a0e3a239b0ff8509c02d64b640fda327b8c156e497698d382c8464310a
+
+# define variables
+root_dir=$1 
+subj=$2
+tool_dir=$3
+crop="CV"
+
+# define directories
+subj_zip="$root_dir""_raw/""$subj"".tar.gz"
+subj_zip="/data/haqueru/GazeCapture/""$subj"".tar.gz"
+subj_dir="$root_dir/""$subj"
+frames_dir="$subj_dir/""frames"
+face_dir="$subj_dir""/appleFace"
+face_file="$subj_dir/""appleFace_""$crop"".json"
+
+# unzip subject and frames_dir within subject
+if [ ! -e "$subj_dir" ]; then 
+    #unzip -o "$subj_zip" -d "$root_dir"
+    tar xvzf "$subj_zip" -C "$root_dir"
+fi
+if [ ! -e "$frames_dir" ]; then 
+    unzip -o "$frames_dir"".zip" -d "$subj_dir"
+fi
+
+# detect faces and eyes using openCV
+if [ ! -f "$face_file" ]; then
+   source /data/haqueru/conda/etc/profile.d/conda.sh
+   conda activate object_detection
+   python "$tool_dir"detect_face.py $subj_dir $tool_dir $crop > detect_face.txt
+   conda deactivate
+fi
+
+# create image crops of face and eyes
+if [ ! -f "$face_dir" ]; then
+    "$tool_dir"run_generateCrops.sh /usr/local/matlab-compiler/v94 "$subj_dir" > gen_crops.txt
+    #"$tool_dir"run_generateFaceGridsFromFaceRect_Al.sh /usr/local/matlab-compiler/v94 "$subj_dir"
+fi
+
+
+
