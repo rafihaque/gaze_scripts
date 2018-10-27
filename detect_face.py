@@ -102,6 +102,7 @@ frames = listdir(join(subj_dir,'frames'))
 tmpframes = [x[:-4] for x in frames]
 frames = [x for _,x in sorted(zip(tmpframes,frames))]
 
+
 # iterate through frames
 for i,frame in enumerate(frames):
     if ".jpg" not in frame:

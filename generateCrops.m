@@ -24,7 +24,7 @@ mkdir(appleRightEyeDir);
 
 % loop through frames
 grid = nan(4,length(s.frames),'single');
-for i = 1:200;length(s.frames)
+for i = 1:length(s.frames)
   fprintf('FRAME: %s \n',s.frames{i})
   if isnan(s.appleFace.x(i)) || isnan(s.appleLeftEye.x(i)) || isnan(s.appleRightEye.x(i))
     continue;
@@ -48,7 +48,7 @@ for i = 1:200;length(s.frames)
   imwrite(rightEyeImage, fullfile(appleRightEyeDir, s.frames{i}));
 end
 s.grid = grid;
-keyboard
+
 save(fullfile(subj,sprintf('subj_info_%s.mat',anal)),'s')
 
 

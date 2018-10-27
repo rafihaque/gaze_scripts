@@ -36,7 +36,7 @@ fi
 
 # create image crops and face grid
 if [ ! -f "$face_dir" ]; then
-    "$tool_dir"run_generateCrops.sh /usr/local/matlab-compiler/v94 "$subj_dir" --gres==lscratch
+    "$tool_dir"run_generateCrops.sh /usr/local/matlab-compiler/v94 "$subj_dir" "$crop"
 fi
 
 

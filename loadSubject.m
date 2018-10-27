@@ -49,7 +49,12 @@ if ~contains(path,'FaceFrames')
   output.dot.yPts = input.YPts';
   output.dot.xCam = input.XCam';
   output.dot.yCam = input.YCam';
+  numFrames = length(output.appleFace.IsValid);
+  taskLabels{1,numFrames}=[];
+  output.taskLabels = taskLabels;
+
 else
+  
   % load image and calibration info
   imInfo=dir([path '/*ImageInfo.json']);
   input=jsondecode(fscanf(fopen(fullfile(imInfo.folder, imInfo.name),'r'),'%c'));
@@ -97,12 +102,26 @@ else
   output.dot.yPts = allDotsPts(:,2)';
   output.dot.xCam = allDotsCM(:,1)';
   output.dot.yCam = allDotsCM(:,2)';
+  
+  taskLabels{1,numFrames}=[];
+  c = calInfo.calibrationFrameCount;
+  for i = 1:length(taskInfo.ImageLabels)
+    numTaskPts = taskInfo.FramesPerImage(i);
+    taskLabels(c+1:c+numTaskPts) = taskInfo.ImageLabels(i);
+    c = c+numTaskPts;
 
+  end
+  
+  output.taskLabels = taskLabels;
+    
+
+  
 end
 
 % Frames
 input=jsondecode(fscanf(fopen(fullfile(path,sprintf('frames_%s.json',crop)),'r'),'%c'));
 output.frames = input';
+
 % Info
 input=jsondecode(fscanf(fopen(fullfile(path,'info.json'),'r'),'%c'));
 output.info.totalFrames = input.TotalFrames;
