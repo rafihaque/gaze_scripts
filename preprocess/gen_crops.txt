@@ -1,0 +1,4 @@
+------------------------------------------
+Setting up environment variables
+---
+LD_LIBRARY_PATH is .:/usr/local/matlab-compiler/v94/runtime/glnxa64:/usr/local/matlab-compiler/v94/bin/glnxa64:/usr/local/matlab-compiler/v94/sys/os/glnxa64:/usr/local/matlab-compiler/v94/sys/opengl/lib/glnxa64

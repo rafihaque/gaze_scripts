@@ -1,0 +1,20 @@
+%This function reconstructs True X, Y positions
+%Cal info is a struct from: calInfo = Json_to_Struct(raw_dirM,'**/*CalibrationInfo.json');
+function [allDotsCM,thisManyValidFramesPerDot,allDotsPts]=getDotInfo(calInfo)
+    allDots=[];
+    thisManyValidFramesPerDot = [];
+    num=calInfo.faceFramePerDot;
+    for i=1:length(num)
+	%Check if row vector
+    	trueX=calInfo.trueX(i);
+	trueY=calInfo.trueY(i);
+
+        allDots = [allDots; repmat(trueX,num(i),1), repmat(trueY,num(i),1)];
+        thisManyValidFramesPerDot = [thisManyValidFramesPerDot, num];
+    end
+   
+    allDotsPts=allDots+17.5;  %Account for difference in where dots are drawn (top left vs center) 
+    %Convert AllDots from Pts2CM
+    allDotsCM=allDots*0.02;
+
+end
