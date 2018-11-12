@@ -45,7 +45,7 @@ DATASET_PATH     = '/data/haqueru/gaze/'
 # params
 workers = 8
 epochs  = 20
-batch_size = 16#torch.cuda.device_count()*32 # Change if out of cuda 
+batch_size = 32#torch.cuda.device_count()*32 # Change if out of cuda 
 base_lr = 0.0001
 momentum = 0.09
 weight_decay = 1e-4

@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# swarm -f ~/gaze_scripts/preprocess/preprocess_swarm --gres=lscratch:1 --logdir=/data/haqueru/output --merge-output -g 3 -b 4 -p 2
+
 # define variables
 root_dir=$1 
 subj=$2
@@ -16,16 +18,16 @@ face_dir="$subj_dir""/appleFace"
 face_file="$subj_dir/""appleFace_""$crop"".json"
 
 
-# unzip subject and frames_dir within subject
-echo $subj_dir
-if [ ! -e "$subj_dir" ]; then 
-    echo $subj_dir
-    unzip -o "$subj_zip" -d "$root_dir"
-    #tar xvzf "$subj_zip" -C "$root_dir"
-fi
-if [ ! -e "$frames_dir" ]; then 
-    unzip -o "$frames_dir"".zip" -d "$subj_dir"
-fi
+# # unzip subject and frames_dir within subject
+# echo $subj_dir
+# if [ ! -e "$subj_dir" ]; then 
+#     echo $subj_dir
+#     unzip -o "$subj_zip" -d "$root_dir"
+#     #tar xvzf "$subj_zip" -C "$root_dir"
+# fi
+# if [ ! -e "$frames_dir" ]; then 
+#     unzip -o "$frames_dir"".zip" -d "$subj_dir"
+# fi
 
 # # detect faces and eyes using openCV
 # echo "FACE FILE:""$face_file"

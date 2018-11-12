@@ -67,7 +67,7 @@ allREye  = [allSubjs.appleRightEye];
 % get all xCam, yCam, grid, 
 labelDotXCam  = [allDot.xCam]';
 labelDotYCam  = [allDot.yCam]';
-labelFaceGrid = [allSubjs.grid]';
+%labelFaceGrid = [allSubjs.grid]';
 labelSubj     = [allSubjs.subj]';
 labelFrames   = [allSubjs.frames]';
 labelValid    = vertcat(allFaces.IsValid) & vertcat(allLEye.IsValid) & vertcat(allREye.IsValid);
@@ -75,7 +75,7 @@ labelValid    = vertcat(allFaces.IsValid) & vertcat(allLEye.IsValid) & vertcat(a
 % apply filters use signal cleaning here if necessary
 labelDotXCam  = labelDotXCam(labelValid==1);
 labelDotYCam  = labelDotYCam(labelValid==1);
-labelFaceGrid = labelFaceGrid(labelValid==1,:);
+%labelFaceGrid = labelFaceGrid(labelValid==1,:);
 labelSubj     = labelSubj(labelValid==1);
 labelFrames   = labelFrames(labelValid==1);
 
