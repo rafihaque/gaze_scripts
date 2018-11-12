@@ -16,14 +16,13 @@ appleFaceDir     = fullfile(subj, sprintf('appleFace_%s',anal));
 appleLeftEyeDir  = fullfile(subj, sprintf('appleLeftEye_%s',anal));
 appleRightEyeDir = fullfile(subj, sprintf('appleRightEye_%s',anal));
 appleGridDir     = fullfile(subj, sprintf('appleGrid_%s',anal));
-
 mkdir(appleGridDir);
 mkdir(appleFaceDir);
 mkdir(appleLeftEyeDir);
 mkdir(appleRightEyeDir);
 
 % loop through frames
-grid = nan(4,length(s.frames),'single');
+all_grid = nan(4,length(s.frames),'single');
 for i = 1:length(s.frames)
   fprintf('FRAME: %s \n',s.frames{i})
   if isnan(s.appleFace.x(i)) || isnan(s.appleLeftEye.x(i)) || isnan(s.appleRightEye.x(i))
@@ -33,9 +32,17 @@ for i = 1:length(s.frames)
   
   % generate grid
   mx = max(size(frame,1),size(frame,2));
-  grid(:,i) = faceGridFromFaceRect(mx, mx, 25, 25, s.appleFace.x(i),...
+  grid = faceGridFromFaceRect(mx, mx, 25, 25, s.appleFace.x(i),...
 			      s.appleFace.y(i), s.appleFace.w(i),...
-			      s.appleFace.h(i), true,s.screen.orientation(i));
+			      s.appleFace.h(i), true);
+  
+  all_grid(:,i) = grid;
+  grid = faceGridFromFaceRect(size(frame,2),size(frame,1), 25, 25, s.appleFace.x(i),...
+			      s.appleFace.y(i), s.appleFace.w(i),...
+			      s.appleFace.h(i),false);
+  grid = reshape(grid,[625 1 1]);
+
+  save(fullfile(appleGridDir,strrep(s.frames{i},'.jpg','.mat')),'grid')
   
   % generate crops
   faceImage = cropRepeatingEdge(frame, round([s.appleFace.x(i) s.appleFace.y(i) s.appleFace.w(i) s.appleFace.h(i)]));
@@ -47,8 +54,7 @@ for i = 1:length(s.frames)
   imwrite(leftEyeImage, fullfile(appleLeftEyeDir, s.frames{i}));
   imwrite(rightEyeImage, fullfile(appleRightEyeDir, s.frames{i}));
 end
-s.grid = grid;
-
+s.grid = all_grid;
 save(fullfile(subj,sprintf('subj_info_%s.mat',anal)),'s')
 
 

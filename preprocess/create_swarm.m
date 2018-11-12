@@ -18,7 +18,7 @@ for i = 1:length(subjs)
   
   
   
-  fprintf(fileID,'cd /home/haqueru/gaze_scripts; sh preprocess.sh /data/haqueru/gaze %s /home/haqueru/gaze_scripts/;\n',r(1:5));
+  fprintf(fileID,'cd /home/haqueru/gaze_scripts/preprocess; sh preprocess.sh /data/haqueru/gaze %s /home/haqueru/gaze_scripts/preprocess/;\n',r(1:5));
   i
 end
 fclose(fileID)

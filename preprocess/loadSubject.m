@@ -6,7 +6,13 @@
 
 function output = loadSubject(path,crop)
 % Apple Face Detections
-input=jsondecode(fscanf(fopen(fullfile(path,sprintf('appleFace_%s.json',crop)),'r'),'%c'));
+
+
+if strcmp(crop,'MIT')
+  input=jsondecode(fscanf(fopen(fullfile(path,'appleFace.json'),'r'),'%c'));
+else
+  input=jsondecode(fscanf(fopen(fullfile(path,sprintf('appleFace_%s.json',crop)),'r'),'%c'));
+end
 output.appleFace.x = input.X;
 output.appleFace.x(~input.IsValid) = NaN;
 output.appleFace.y = input.Y;
@@ -15,10 +21,16 @@ output.appleFace.w = input.W;
 output.appleFace.w(~input.IsValid) = NaN;
 output.appleFace.h = input.H;
 output.appleFace.h(~input.IsValid) = NaN;
-output.appleFace.IsValid = input.IsValid';
+output.appleFace.IsValid = input.IsValid;
 
 % Apple Left Eye Detections
-input=jsondecode(fscanf(fopen(fullfile(path,sprintf('appleLeftEye_%s.json',crop)),'r'),'%c'));
+
+
+if strcmp(crop,'MIT')
+  input=jsondecode(fscanf(fopen(fullfile(path,'appleLeftEye.json'),'r'),'%c'))
+else
+  input=jsondecode(fscanf(fopen(fullfile(path,sprintf('appleLeftEye_%s.json',crop)),'r'),'%c'));
+end
 output.appleLeftEye.x = input.X;
 output.appleLeftEye.x(~input.IsValid) = NaN;
 output.appleLeftEye.y = input.Y;
@@ -27,10 +39,14 @@ output.appleLeftEye.w = input.W;
 output.appleLeftEye.w(~input.IsValid) = NaN;
 output.appleLeftEye.h = input.H;
 output.appleLeftEye.h(~input.IsValid) = NaN;
-output.appleLeftEye.isValid = input.IsValid;
+output.appleLeftEye.IsValid = input.IsValid;
 
 % Apple Right Eye Detections
-input=jsondecode(fscanf(fopen(fullfile(path,sprintf('appleRightEye_%s.json',crop)),'r'),'%c'));
+if strcmp(crop,'MIT')
+  input=jsondecode(fscanf(fopen(fullfile(path,'appleRightEye.json'),'r'),'%c'))
+else
+  input=jsondecode(fscanf(fopen(fullfile(path,sprintf('appleRightEye_%s.json',crop)),'r'),'%c'));
+end
 output.appleRightEye.x = input.X;
 output.appleRightEye.x(~input.IsValid) = NaN;
 output.appleRightEye.y = input.Y;
@@ -39,7 +55,7 @@ output.appleRightEye.w = input.W;
 output.appleRightEye.w(~input.IsValid) = NaN;
 output.appleRightEye.h = input.H;
 output.appleRightEye.h(~input.IsValid) = NaN;
-
+output.appleRightEye.IsValid = input.IsValid;
 
 
 if ~contains(path,'FaceFrames')
@@ -54,7 +70,7 @@ if ~contains(path,'FaceFrames')
   output.taskLabels = taskLabels;
 
 else
-  
+
   % load image and calibration info
   imInfo=dir([path '/*ImageInfo.json']);
   input=jsondecode(fscanf(fopen(fullfile(imInfo.folder, imInfo.name),'r'),'%c'));
@@ -63,24 +79,25 @@ else
   taskInfo = dir([path  '/*TaskImageInfo.json']);
   taskInfo=jsondecode(fscanf(fopen(fullfile(taskInfo.folder, taskInfo.name),'r'),'%c'));
   
-
+ 
   % reconstruct dot array
   allDotsCalPts = nan(sum(calInfo.faceFramePerDot),2,'single');
   c = 0;
   for i=1:length(calInfo.faceFramePerDot)  
-    numCalPts = length(calInfo.trueX(i));
+    numCalPts = calInfo.faceFramePerDot(i);
     allDotsCalPts(c+1:c+numCalPts,1) = calInfo.trueX(i);
     allDotsCalPts(c+1:c+numCalPts,2) = calInfo.trueY(i);
-    c = c+numCalPts;
+    c = c+numCalPts
+
   end
   allDotsCalPts=allDotsCalPts+17.5;  
-  
+
   % convert screen to cam
   numFrames = length(output.appleFace.IsValid);
   calStrt   = calInfo.instructionsFrameCount+1;
   calFin    = calStrt+sum(calInfo.faceFramePerDot)-1;
   lenCal    = length(calStrt:calFin);
-  
+
   % convert screen to cam
   % MAKE SURE TO CHANGE FOR DIFFERENCE DEVICES %
   
@@ -111,16 +128,19 @@ else
     c = c+numTaskPts;
 
   end
-  
+ 
   output.taskLabels = taskLabels;
-    
-
-  
 end
 
 % Frames
-input=jsondecode(fscanf(fopen(fullfile(path,sprintf('frames_%s.json',crop)),'r'),'%c'));
-output.frames = input';
+if strcmp(crop,'MIT')
+  input=jsondecode(fscanf(fopen(fullfile(path,'frames.json'),'r'),'%c'));
+  output.frames = input';
+else
+  input=jsondecode(fscanf(fopen(fullfile(path,sprintf('frames_%s.json',crop)),'r'),'%c'));
+  output.frames = input';
+end
+
 
 % Info
 input=jsondecode(fscanf(fopen(fullfile(path,'info.json'),'r'),'%c'));

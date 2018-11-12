@@ -105,6 +105,9 @@ frames = [x for _,x in sorted(zip(tmpframes,frames))]
 
 # iterate through frames
 for i,frame in enumerate(frames):
+
+
+    print('DETECTING FACES FOR FRAME:' + frame)
     if ".jpg" not in frame:
         continue
     else:

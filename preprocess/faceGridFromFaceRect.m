@@ -12,7 +12,7 @@
 %     [x y w h] of the 1s square within the gridW x gridH grid.
 
 function labelFaceGrid = faceGridFromFaceRect(frameW, frameH, gridW, ...
-    gridH, labelFaceX, labelFaceY, labelFaceW, labelFaceH, parameterized,OT)
+    gridH, labelFaceX, labelFaceY, labelFaceW, labelFaceH, parameterized)
 
 scaleX = gridW / frameW;
 scaleY = gridH / frameH;
@@ -33,11 +33,6 @@ for i=1:numSamples
   h = round(labelFaceH(i) * scaleY);
   
   
-  if OT ==1 | OT==2
-    xLo = xLo+3;
-  else
-    yLo = yLo+3;
-  end
   
   if parameterized
     labelFaceGrid(i, :) = [xLo yLo w h];
