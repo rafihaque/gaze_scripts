@@ -40,9 +40,9 @@ Booktitle = {IEEE Conference on Computer Vision and Pattern Recognition (CVPR)}
 
 
 # paths 
-CHECKPOINTS_PATH = '/home/haqueru/gaze_scripts/train/models/'
-TRAIN_PATH = '/home/haqueru/gaze_scripts/train/'
-DATASET_PATH = '/data/haqueru/gaze/'
+CHECKPOINTS_PATH = 'home/apongos/gaze_scripts/train/models/'
+TRAIN_PATH = '/home/apongos/gaze_scripts/train/'
+DATASET_PATH = '/labs/cliffordlab/data/ipad_art_gaze/EHAS/server_scripts/eyemobile/rawData/'
 
 # params
 workers = 2
