@@ -180,9 +180,7 @@ def train(train_loader, model, criterion,optimizer, epoch):
 
         # compute output
         output = model(imFace, imEyeL, imEyeR, faceGrid)
-
         loss = criterion(output, gaze)
-        
         losses.update(loss.data[0], imFace.size(0))
 
         # compute gradient and do SGD step

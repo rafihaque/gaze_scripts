@@ -7,12 +7,13 @@ subjs(1:2) =[];
 allSubjs = [];
 allLabelTrain = [];
 allLabelTest = [];
-
+allLabelValid  = [];
 % loop through subjects
 subjs = subjs(~contains(subjs,'Face'));
 
 for i = 1:length(subjs)
-  subj_info = fullfile(raw,subjs{i},sprintf('subj_info_%s.mat',anal))
+  subj_info = fullfile(raw,subjs{i},sprintf('subj_info_%s.mat',anal));
+  fprintf('SUBJ: %s \n',subjs{i})
   if exist(subj_info,'file')
     load(subj_info)
     allSubjs = [allSubjs; s];
@@ -34,14 +35,27 @@ for i = 1:length(subjs)
     
     % train 
     labelTrain = false(length(labelFrames),1);
+    labelVal   = false(length(labelFrames),1);
     r = randperm(length(labelFrames));
-    labelTrain(r(1:round(length(labelTrain)*.85))) = true;
-    labelTest = ~labelTrain;
     
-    save(fullfile(raw,subjs{i},sprintf('metadata_%s.mat',anal)),'labelDotXCam','labelDotYCam','labelFaceGrid','labelSubj','labelFrames','labelTrain','labelTest')
+    numTrain  = round(length(r)*.80);
+    numValid  = round((length(r)-numTrain)/2);
+
+    labelTrain(r(1:numTrain)) = true;
+    labelVal(r(numTrain+1:numTrain+numValid))=true;
+    labelTest = ~(labelTrain|labelVal);
+    
+    % check
+    if ~sum(labelTrain+labelVal+labelTest==1)==length(r);
+      keyboard
+    end
+    
+    save(fullfile(raw,subjs{i},sprintf('metadata_%s.mat',anal)),'labelDotXCam','labelDotYCam','labelFaceGrid','labelSubj','labelFrames','labelTrain','labelVal','labelTest')
 
     allLabelTrain = [allLabelTrain; labelTrain];
+    allLabelValid = [allLabelTest; labelVal];
     allLabelTest  = [allLabelTest; labelTest];
+
   end
 end
 
@@ -67,10 +81,11 @@ labelFrames   = labelFrames(labelValid==1);
 
 labelTrain = allLabelTrain;
 labelTest = allLabelTest;
-keyboard
+labelVal = allLabelValid;
 
 
-save(fullfile(raw,sprintf('metadata_%s.mat',anal)),'labelDotXCam','labelDotYCam','labelFaceGrid','labelSubj','labelFrames','labelTrain','labelTest')
+
+save(fullfile(raw,sprintf('metadata_%s.mat',anal)),'labelDotXCam','labelDotYCam','labelFaceGrid','labelSubj','labelFrames','labelTrain','labelVal','labelTest')
 
 % % quantiy % subjects missing
 % crops = 0; detect = 0;
