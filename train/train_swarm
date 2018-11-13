@@ -1,2 +1,2 @@
-cd /home/haqueru/gaze_scripts/train; python main.py --meta MIT --check None --anal MIT_B16FG
+cd /home/haqueru/gaze_scripts/train; python main.py --meta MIT --check None --anal MIT_B32
 

@@ -45,7 +45,7 @@ DATASET_PATH     = '/data/haqueru/gaze/'
 # params
 workers = 8
 epochs  = 20
-batch_size = 16#torch.cuda.device_count()*32 # Change if out of cuda 
+batch_size = 32#torch.cuda.device_count()*32 # Change if out of cuda 
 base_lr = 0.0001
 momentum = 0.09
 weight_decay = 1e-4
@@ -143,7 +143,7 @@ def main(meta,check,anal):
         }, is_best,'checkpoint_%s.pth.tar' % anal)
         
         # evalute on test set
-        test(test_loader, model, criterion, epoch,0)
+        validate(test_loader, model, criterion, epoch,0)
 
 def write2(filename,option,writeThis):
     testLossF = open(filename,option)
@@ -263,16 +263,16 @@ def validate(loader, model, criterion, epoch, valortest):
                   'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
                   'Loss {loss.val:.4f} ({loss.avg:.4f})\t'
                   'Error L2 {lossLin.val:.4f} ({lossLin.avg:.4f})\t'.format(
-                    epoch, i, len(val_loader), batch_time=batch_time,
+                    epoch, i, len(loader), batch_time=batch_time,
                    loss=losses,lossLin=lossesLin))
 
         writeThis='Epoch (val): [{0}][{1}/{2}]\t' \
             'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t' \
             'Loss {loss.val:.4f} ({loss.avg:.4f})\t' \
             'Error L2 {lossLin.val:.4f} ({lossLin.avg:.4f})\n'.format(
-                epoch, i, len(val_loader), batch_time=batch_time,
+                epoch, i, len(loader), batch_time=batch_time,
                 loss=losses,lossLin=lossesLin)
-        if validortext:
+        if valortest:
             write2(valid_txt,"a",writeThis)
         else:
             write2(test_txt,"a",writeThis)
