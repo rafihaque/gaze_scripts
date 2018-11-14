@@ -45,7 +45,7 @@ DATASET_PATH     = '/data/haqueru/gaze/'
 # params
 workers = 8
 epochs  = 20
-batch_size = 32#torch.cuda.device_count()*32 # Change if out of cuda 
+batch_size = 128#torch.cuda.device_count()*32 # Change if out of cuda 
 base_lr = 0.0001
 momentum = 0.09
 weight_decay = 1e-4
@@ -63,7 +63,7 @@ def main(meta,check,anal):
     
     # copy this file for future reference
     copyfile(os.path.join(TRAIN_PATH,'main.py'),os.path.join(CHECKPOINTS_PATH,'main_%s.py' % anal) )
-
+    print(batch_size)
     # define write files and create if does not exist
     train_txt = os.path.join(CHECKPOINTS_PATH,'train_%s_%s_%s' % (meta, check, anal))
     valid_txt = os.path.join(CHECKPOINTS_PATH,'valid_%s_%s_%s' % (meta, check, anal))

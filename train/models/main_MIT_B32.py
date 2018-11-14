@@ -63,7 +63,7 @@ def main(meta,check,anal):
     
     # copy this file for future reference
     copyfile(os.path.join(TRAIN_PATH,'main.py'),os.path.join(CHECKPOINTS_PATH,'main_%s.py' % anal) )
-
+    print(batch_size)
     # define write files and create if does not exist
     train_txt = os.path.join(CHECKPOINTS_PATH,'train_%s_%s_%s' % (meta, check, anal))
     valid_txt = os.path.join(CHECKPOINTS_PATH,'valid_%s_%s_%s' % (meta, check, anal))
