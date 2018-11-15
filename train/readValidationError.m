@@ -7,29 +7,46 @@
 % fprintf(fileID, T);
 % fname='test.txt';
 
-fold="/Users/apongos/Downloads";
-fname=fullfile(fold,'liveLossVal_Test.txt');
-T = readtable(fname, 'Delimiter','\t','ReadVariableNames',false);
+root='/home/haqueru/gaze_scripts/train/models';
 
-loss=T.Var4;
 
-%Find the indices with (val) in them
-headers=T.Var1;
-IndexC = strfind(headers, '(val)');
-Index = find(not(cellfun('isempty', IndexC)));
-loss2=loss(Index);
 
-%Grab only average loss
-avgLoss=zeros(1,length(Index));
-for i=1:length(loss2)
+BATCH = [16 32 64 128];
+
+for j = 1:length(BATCH)
+
+  
+  fname=fullfile(root,sprintf('train_MIT_None_MIT_B%d',BATCH(j)));
+  T = readtable(fname, 'Delimiter','\t','ReadVariableNames',false);
+
+  %Find the indices with (val) in them
+  loss    =  T.Var4;
+  headers = T.Var1;
+  IndexC = strfind(headers, '(train)');
+  Index = find(not(cellfun('isempty', IndexC)));
+  loss2=loss(Index);
+
+  %Grab only average loss
+  avgLoss=zeros(1,length(Index));
+  for i=1:length(loss2)
     [token, token2 ]= strtok(loss2{i,1},{'('});
     avgLoss(i)=str2double(token2(2:end-1));
+  end
+  
+  plot((1:length(avgLoss))*BATCH(j)*1000,sqrt(avgLoss),'LineWidth',2)
+  hold on
+
 end
 
+
+
 ft=16;
-plot(1:length(avgLoss),avgLoss,'LineWidth',2)
-xlabel('Iteration','FontSize',ft)
+figuresize(10,10,'inches')
+xlabel('Number of Frames','FontSize',ft)
 ylabel('L2 Loss (cm)','FontSize',ft)
-title('Validation Error (Fine-Tune Research atop MIT, 625x1)','FontSize',ft)
-ylim([0 11]);
-xlim([0 length(avgLoss)])
+title(' Training Error (Original Dataset)','FontSize',ft)
+%ylim([0 11]);
+%xlim([0 length(avgLoss)])
+set(gca,'FontSize',16)
+legend('16','32','64','128')
+keyboard
