@@ -1,46 +1,46 @@
 #!/bin/sh
+#PBS -l nodes=1:ppn=1
+#PBS -q batch
+#PBS -d /home/apongos/gaze_scripts/preprocess
+#PBS -o outPutFiles
+#PBS -e outPutFiles
 
 # define variables
-root_dir=$1 
-subj=$2
-tool_dir=$3
-crop="MIT"
+rawDataPath='/labs/cliffordlab/data/ipad_art_gaze/EHAS/server_scripts/eyemobile/rawData'
+tool_dir='/home/apongos/gaze_scripts/preprocess/'
 
 # define directories
-subj_zip="$root_dir""_raw/""$subj"".tar.gz"
-subj_zip="/data/haqueru/Emory/""$subj"".tar.gz"
-subj_zip="/data/haqueru/Emory/""$subj"".zip"
-subj_dir="$root_dir/""$subj"
+subj_dir="$rawDataPath/""$sub"
+subj_zip="$subj_dir""/frames.zip"
 frames_dir="$subj_dir/""frames"
-face_dir="$subj_dir""/appleFace"
+face_dir="$subj_dir""/appleFace_""$crop"
 face_file="$subj_dir/""appleFace_""$crop"".json"
 
 
 # unzip subject and frames_dir within subject
-echo $subj_dir
-if [ ! -e "$subj_dir" ]; then 
-    echo $subj_dir
-    unzip -o "$subj_zip" -d "$root_dir"
+#echo $subj_dir
+#if [ ! -e "$subj_dir" ]; then
+if [ -z "$(ls -A $frames_dir)" ]; then	
+    unzip "$subj_zip" -d "$subj_dir"
     #tar xvzf "$subj_zip" -C "$root_dir"
 fi
-if [ ! -e "$frames_dir" ]; then 
-    unzip -o "$frames_dir"".zip" -d "$subj_dir"
-fi
+#if [ ! -e "$frames_dir" ]; then 
+#    unzip -o "$frames_dir"".zip" -d "$subj_dir"
+#fi
 
 # # detect faces and eyes using openCV
 # echo "FACE FILE:""$face_file"
-# if [ ! -f "$face_file" ]; then
-#    source /data/haqueru/conda/etc/profile.d/conda.sh
-#    conda activate object_detection
-#    python "$tool_dir"detect_face.py $subj_dir $tool_dir $crop
-#    conda deactivate
-# fi
+ if [ ! -e "$face_file" ]; then
+  echo "Detecting face"
+    python "$tool_dir"detect_face.py $subj_dir $tool_dir $crop
+ fi
 
 # create image crops and face grid
-echo "FACE DIR:""$face_dir"
-if [ ! -f "$face_dir" ]; then
-    "$tool_dir"run_generateCrops.sh /usr/local/matlab-compiler/v94 "$subj_dir" "$crop"
-fi
+#echo "FACE DIR:""$face_dir"
+#if [ ! -d "$face_dir" ]; then
+#  echo "Making crops"
+#    "$tool_dir"run_generateCrops.sh /opt/matlab/MCR/2017b/ "$subj_dir" "$crop"
+#fi
 
 
 

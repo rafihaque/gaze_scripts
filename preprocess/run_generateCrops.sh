@@ -4,18 +4,6 @@
 # Sets up the MATLAB Runtime environment for the current $ARCH and executes 
 # the specified command.
 #
-if [[ "${SLURM_JOBID:-none}" == "none" ]];then
-  echo "not running in job allocation"
-  exit 64
-fi
-if [[ ! -d /lscratch/${SLURM_JOBID} ]]; then
-  echo "lscratch directory does not exist; submit with --gres=lscratch"
-  exit 65
-fi
-MCRdir=/lscratch/${SLURM_JOBID}/mcr${RANDOM}_${RANDOM}
-mkdir -p $MCRdir
-export MCR_CACHE_ROOT=$MCRdir
-
 exe_name=$0
 exe_dir=`dirname "$0"`
 echo "------------------------------------------"

@@ -1,8 +1,8 @@
 #!/bin/sh
-#PBS -l nodes=1:ppn=15
+#PBS -l nodes=1:ppn=3
 ##PBS -l nodes=1:ppn=12:pascal,walltime=168:00:00
 #PBS -q batch
-#PBS -d /home/apongos/EHAS/server_scripts/Retrain_CNN_Pipeline/toolBox/pytorch/
+#PBS -d /home/apongos/gaze_scripts/train
 #PBS -o outPutFiles
 #PBS -e outPutFiles
 
@@ -16,12 +16,12 @@ PATH=/home/apongos/gaze_scripts/train:/usr/lib64/mpich/bin:/usr/local/cuda/bin:/
 
 #Directories where toolbox are located
 workDir="/home/apongos/gaze_scripts/train/"
-toolDir="/home/apongos/gaze_scripts/train"
+toolDir="/home/apongos/gaze_scripts/train/"
 rawDataPath="/labs/cliffordlab/data/ipad_art_gaze/EHAS/server_scripts/eyemobile/rawData/"
 
 #getSubjsFromTxt=$2 #Grabs from ./selectedSubject2Processes.txt
 if [ -z "$modelName" ]; then
- modelName="best_checkpointBMI_GazeAllLong_FineTuneIpad_OurCrops_Clinic.pth.tar"
+ modelName="best_checkpoint_MIT_B16.pth.tar"
 fi
 
 #Now that path is set, get subjects in that path
@@ -32,8 +32,9 @@ i=1
 #Find all subjects
 #echo rawDataPathWild: $rawDataPath*
 #getSubjsFromTxt=true #grabs from ./selectedSubject2Processes.txt
-if [ "$getSubjsFromTxt" = false ] ; then
- for dir in $rawDataPath*
+#if [ "$getSubjsFromTxt" = false ] ; then
+if [ true = true ] ; then 
+for dir in $rawDataPath*
  do
    #Uncomment below to correctly identify MIT dataset
    #echo "$dir"
@@ -46,14 +47,14 @@ if [ "$getSubjsFromTxt" = false ] ; then
    dir2=${dir##*/}
    #Key word is "FaceFrames" for clinic and research
    if [[ ${dir2##*/} == *"FaceFrames"* ]] && [[ ${dir2##*/} != *".zip"* ]]; then
-	   subjectArray[i++]=${dir}
+	   subjectArray[i++]=${dir2}
 	   #echo appending ${dir2} 
-   else
+   #else
    #Key word is subject folder consisting of only numbers for MIT dataset
-	  if [[ ${dir2} =~ ^[0-9]+$ ]] && [[ ${dir2##*/} != *".zip"* ]]; then
-	   subjectArray[i++]=${dir}
-	  fi
-    fi
+   #	  if [[ ${dir2} =~ ^[0-9]+$ ]] && [[ ${dir2##*/} != *".zip"* ]]; then
+	  # subjectArray[i++]=${dir}
+	#  fi
+   fi
   done
 else
  IFS=$'\r\n' GLOBIGNORE='*' command eval  'subjectArray=($(cat ./selectedSubject2Processes.txt))'
@@ -63,7 +64,7 @@ else
 done
 
 fi
-echo "subjectArray:" "${subjectArray[@]}"
+#echo "subjectArray:" "${subjectArray[@]}"
 
 #exit
 
@@ -78,13 +79,14 @@ batchSize=8
 jobCount=1
 subCount=0
 #This for-block is for pytorch and is limited to gpu resources (batch size lower)
-for sub in "${subjectArray[@]}"
+for sub in "${subjectArray[@]:1:3}"
   do
   #  echo "Already processed $sub. Delete events.mat file if you wish to reprocess."
     filePath="$rawDataPath"$sub"/"*xyTorch_MIT_ipad_scratch.mat
+    metaP="$rawDataPath"$sub"/"metadata_CV.mat
     #if [ ! -e "$filePath" ]; then  
     echo "Sending $sub files to get processed"
-        bash pyTorchAndEventsProcesses.sh "$sub" "$workDir" "$modelName" &
+        python "$toolDir"forward.py -s "$sub" -c "best_checkpoint_MIT_B16.pth.tar" -a "MIT_B16" -m "CV" &
         jobCount=$((jobCount+1))
         echo "jobCount" $jobCount
     #fi

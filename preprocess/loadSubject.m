@@ -143,12 +143,20 @@ end
 
 
 % Info
-input=jsondecode(fscanf(fopen(fullfile(path,'info.json'),'r'),'%c'));
-output.info.totalFrames = input.TotalFrames;
-output.info.numFaceDetections = input.NumFaceDetections;
-output.info.numEyeDetections = input.NumEyeDetections;
-output.info.dataset = input.Dataset;
-output.info.deviceName = input.DeviceName;
+if exist(fullfile(path,'info.json'))
+ input=jsondecode(fscanf(fopen(fullfile(path,'info.json'),'r'),'%c'));
+ output.info.totalFrames = input.TotalFrames;
+ output.info.numFaceDetections = input.NumFaceDetections;
+ output.info.numEyeDetections = input.NumEyeDetections;
+ output.info.dataset = input.Dataset;
+ output.info.deviceName = input.DeviceName;
+else
+ output.info.totalFrames=length(output.appleRightEye.IsValid);
+ output.info.numFaceDetections=sum(output.appleFace.IsValid);
+ output.info.numEyeDetections=sum(output.appleRightEye.IsValid & output.appleLeftEye.IsValid);
+ output.info.dataset='Set 12';
+ output.info.deviceName='iPad Air 2';
+end
 
 % Screen
 input=jsondecode(fscanf(fopen(fullfile(path,'screen.json'),'r'),'%c'));
@@ -157,9 +165,9 @@ if ~contains(path,'FaceFrames')
   output.screen.h = input.H;
   output.screen.orientation = input.Orientation;
 else
-  output.screen.w = screenw;
-  output.screen.h = screenh;
-  output.screen.orientation = orient;
+  output.screen.w = ones(numFrames,1)*728;
+  output.screen.h = ones(numFrames,1)*1024;
+  output.screen.orientation = ones(numFrames,1);
 end
 
 % Subj

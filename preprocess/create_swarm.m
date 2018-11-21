@@ -14,12 +14,8 @@ subjs(~contains(subjs,'.tar.gz')) =[];
 fileID = fopen('preprocess_swarm','w');
 for i = 1:length(subjs)
   r = subjs{i};
-
-  
-  
   
   fprintf(fileID,'cd /home/haqueru/gaze_scripts/preprocess; sh preprocess.sh /data/haqueru/gaze %s /home/haqueru/gaze_scripts/preprocess/;\n',r(1:5));
-  i
 end
 fclose(fileID)
 

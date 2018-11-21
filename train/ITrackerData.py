@@ -8,6 +8,8 @@ import torch
 import numpy as np
 import re
 import pdb
+import h5py
+
 '''
 Data loader for the iTracker.
 Modify to fit your data format.
@@ -32,7 +34,8 @@ Booktitle = {IEEE Conference on Computer Vision and Pattern Recognition (CVPR)}
 '''
 
 #DATASET_PATH = '/data/haqueru/gaze/'
-MEAN_PATH = '/home/haqueru/gaze_scripts/train/'
+MEAN_PATH = '/home/apongos/gaze_scripts/train/'
+
 #META_PATH = '/data/haqueru/gaze/metadata_CV.mat'
 
 def loadMetadata(filename, silent = False):
@@ -66,13 +69,13 @@ class SubtractMean(object):
 
 
 class ITrackerData(data.Dataset):
-    def __init__(self, split = 'train', imSize=(224,224), gridSize=(25, 25),DATASET_PATH='/data/haqueru/gaze/',METADATA_PATH='/data/haqueru/gaze/',META_NAME='train'):
+    def __init__(self, split = 'train', imSize=(224,224), gridSize=(25, 25),DATASET_PATH='/labs/cliffordlab/data/ipad_art_gaze/EHAS/server_scripts/eyemobile/rawData/',METADATA_PATH='/labs/cliffordlab/data/ipad_art_gaze/EHAS/server_scripts/eyemobile/rawData/',META_NAME='train'):
 
         self.imSize = imSize
         self.gridSize = gridSize
 
         print('Loading iTracker dataset...')
-        self.metadata = loadMetadata(os.path.join(METADATA_PATH,META_NAME))
+        self.metadata = loadMetadata(os.path.join(METADATA_PATH,META_NAME + '.mat'))
         self.faceMean = loadMetadata(os.path.join(MEAN_PATH, 'mean_face_224.mat'))['image_mean']
         self.eyeLeftMean = loadMetadata(os.path.join(MEAN_PATH, 'mean_left_224.mat'))['image_mean']
         self.eyeRightMean = loadMetadata(os.path.join(MEAN_PATH, 'mean_right_224.mat'))['image_mean']
@@ -102,7 +105,7 @@ class ITrackerData(data.Dataset):
         elif split == 'train':
             mask = self.metadata['labelTrain']
         else:
-            mask = self.metadata['labelTrain']+self.metadata['labelTest']
+            mask = self.metadata['labelVal']+self.metadata['labelTrain']+self.metadata['labelTest']
         self.indices = np.argwhere(mask)[:,0]
         print('Loaded iTracker dataset split "%s" with %d records...' % (split, len(self.indices)))
 
@@ -137,10 +140,10 @@ class ITrackerData(data.Dataset):
         # imEyeRPath = os.path.join(DATASET_PATH, '%05d/appleRightEye_CV/%05d.jpg' % (self.metadata['labelRecNum'][index], self.metadata['frameIndex'][index]))
         
 
-        imFacePath = os.path.join(self.DATASET_PATH, '%s/appleFace_MIT/%s' % (self.metadata['labelSubj'][index], self.metadata['labelFrames'][index]))
-        imEyeLPath = os.path.join(self.DATASET_PATH, '%s/appleLeftEye_MIT/%s' % (self.metadata['labelSubj'][index], self.metadata['labelFrames'][index]))
-        imEyeRPath = os.path.join(self.DATASET_PATH, '%s/appleRightEye_MIT/%s' % (self.metadata['labelSubj'][index], self.metadata['labelFrames'][index]))
-        gridPath = os.path.join(self.DATASET_PATH, '%s/appleGrid_MIT/%s' % (self.metadata['labelSubj'][index], self.metadata['labelFrames'][index].replace('.jpg','')))
+        imFacePath = os.path.join(self.DATASET_PATH, '%s/appleFace_CV/%s' % (self.metadata['labelSubj'][index], self.metadata['labelFrames'][index]))
+        imEyeLPath = os.path.join(self.DATASET_PATH, '%s/appleLeftEye_CV/%s' % (self.metadata['labelSubj'][index], self.metadata['labelFrames'][index]))
+        imEyeRPath = os.path.join(self.DATASET_PATH, '%s/appleRightEye_CV/%s' % (self.metadata['labelSubj'][index], self.metadata['labelFrames'][index]))
+        gridPath = os.path.join(self.DATASET_PATH, '%s/appleGrid_CV/%s' % (self.metadata['labelSubj'][index], self.metadata['labelFrames'][index].replace('.jpg','.mat')))
 
 
         imFace = self.loadImage(imFacePath)
@@ -152,10 +155,14 @@ class ITrackerData(data.Dataset):
         imEyeR = self.transformEyeR(imEyeR)
 
         gaze = np.array([self.metadata['labelDotXCam'][index], self.metadata['labelDotYCam'][index]], np.float32)
-        gridStruct=sio.loadmat(gridPath)
-        faceGrid = gridStruct['grid']
-
-
+        
+        try:
+            gridStruct=sio.loadmat(gridPath)
+            faceGrid = gridStruct['grid']
+        except:
+            gridStruct=h5py.File(gridPath,'r')
+            faceGrid = gridStruct['grid']
+        
         #faceGrid=[]
         #if len(self.metadata['labelFaceGrid'][index,:]) < 5:
         #    #print('input',self.metadata['labelFaceGrid'][index,:])

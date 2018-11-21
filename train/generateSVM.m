@@ -1,6 +1,0 @@
-function generateSVM(subjects)
-
-
-
-end
-

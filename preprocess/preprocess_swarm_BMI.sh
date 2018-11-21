@@ -1,0 +1,2 @@
+#!/bin/bash
+qsub -N 00002 -v sub='00002',crop='CV' /home/apongos/gaze_scripts/preprocess/preprocess.sh qsub -N 00003 -v sub='00003',crop='CV' /home/apongos/gaze_scripts/preprocess/preprocess.sh qsub -N 00005 -v sub='00005',crop='CV' /home/apongos/gaze_scripts/preprocess/preprocess.sh 

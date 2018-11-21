@@ -9,11 +9,17 @@ allLabelTrain = [];
 allLabelTest = [];
 allLabelValid  = [];
 % loop through subjects
-subjs = subjs(~contains(subjs,'Face'));
+subjs = subjs(contains(subjs,'FaceFrames'));
 
 for i = 1:length(subjs)
   subj_info = fullfile(raw,subjs{i},sprintf('subj_info_%s.mat',anal));
   fprintf('SUBJ: %s \n',subjs{i})
+
+  if ~exist(subj_info,'file')
+    s = loadSubject(fullfile(raw,subjs{i}),'CV');
+    save(fullfile(raw,subjs{i},sprintf('subj_info_%s.mat',anal)),'s')
+  end
+
   if exist(subj_info,'file')
     load(subj_info)
     allSubjs = [allSubjs; s];
@@ -21,7 +27,7 @@ for i = 1:length(subjs)
     % get all xCam, yCam, grid, 
     labelDotXCam  = [s.dot.xCam]';
     labelDotYCam  = [s.dot.yCam]';
-    labelFaceGrid = [s.grid]';
+    %labelFaceGrid = [s.grid]';
     labelSubj     = [s.subj]';
     labelFrames   = [s.frames]';
     labelValid    = vertcat(s.appleFace.IsValid) & vertcat(s.appleLeftEye.IsValid) & vertcat(s.appleRightEye.IsValid);
@@ -29,7 +35,7 @@ for i = 1:length(subjs)
     % apply filters use signal cleaning here if necessary
     labelDotXCam  = labelDotXCam(labelValid==1);
     labelDotYCam  = labelDotYCam(labelValid==1);
-    labelFaceGrid = labelFaceGrid(labelValid==1,:);
+    %labelFaceGrid = labelFaceGrid(labelValid==1,:);
     labelSubj     = labelSubj(labelValid==1);
     labelFrames   = labelFrames(labelValid==1);
     
@@ -49,8 +55,9 @@ for i = 1:length(subjs)
     if ~sum(labelTrain+labelVal+labelTest==1)==length(r);
       keyboard
     end
+   
     
-    save(fullfile(raw,subjs{i},sprintf('metadata_%s.mat',anal)),'labelDotXCam','labelDotYCam','labelFaceGrid','labelSubj','labelFrames','labelTrain','labelVal','labelTest')
+    save(fullfile(raw,subjs{i},sprintf('metadata_%s.mat',anal)),'labelDotXCam','labelDotYCam','labelSubj','labelFrames','labelTrain','labelVal','labelTest')
 
     allLabelTrain = [allLabelTrain; labelTrain];
     allLabelValid = [allLabelTest; labelVal];
@@ -67,7 +74,7 @@ allREye  = [allSubjs.appleRightEye];
 % get all xCam, yCam, grid, 
 labelDotXCam  = [allDot.xCam]';
 labelDotYCam  = [allDot.yCam]';
-labelFaceGrid = [allSubjs.grid]';
+%labelFaceGrid = [allSubjs.grid]';
 labelSubj     = [allSubjs.subj]';
 labelFrames   = [allSubjs.frames]';
 labelValid    = vertcat(allFaces.IsValid) & vertcat(allLEye.IsValid) & vertcat(allREye.IsValid);
@@ -75,7 +82,7 @@ labelValid    = vertcat(allFaces.IsValid) & vertcat(allLEye.IsValid) & vertcat(a
 % apply filters use signal cleaning here if necessary
 labelDotXCam  = labelDotXCam(labelValid==1);
 labelDotYCam  = labelDotYCam(labelValid==1);
-labelFaceGrid = labelFaceGrid(labelValid==1,:);
+%labelFaceGrid = labelFaceGrid(labelValid==1,:);
 labelSubj     = labelSubj(labelValid==1);
 labelFrames   = labelFrames(labelValid==1);
 
@@ -85,7 +92,7 @@ labelVal = allLabelValid;
 
 
 
-save(fullfile(raw,sprintf('metadata_%s.mat',anal)),'labelDotXCam','labelDotYCam','labelFaceGrid','labelSubj','labelFrames','labelTrain','labelVal','labelTest')
+save(fullfile(raw,sprintf('metadata_%s.mat',anal)),'labelDotXCam','labelDotYCam','labelSubj','labelFrames','labelTrain','labelVal','labelTest')
 
 % % quantiy % subjects missing
 % crops = 0; detect = 0;

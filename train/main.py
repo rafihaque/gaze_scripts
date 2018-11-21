@@ -40,14 +40,14 @@ Booktitle = {IEEE Conference on Computer Vision and Pattern Recognition (CVPR)}
 
 
 # paths 
-CHECKPOINTS_PATH = '/home/haqueru/gaze_scripts/train/models/'
-TRAIN_PATH = '/home/haqueru/gaze_scripts/train/'
-DATASET_PATH = '/data/haqueru/gaze/'
-doTest = False
+CHECKPOINTS_PATH = '/home/apongos/gaze_scripts/train/models/'
+TRAIN_PATH = '/home/apongos/gaze_scripts/train/'
+DATASET_PATH = '/labs/cliffordlab/data/ipad_art_gaze/EHAS/server_scripts/eyemobile/rawData/'
+doTest = True
 # params
-workers = 8
-epochs  = 20
-batch_size = 16#torch.cuda.device_count()*32 # Change if out of cuda 
+workers = 1
+epochs  = 1
+batch_size = 1#torch.cuda.device_count()*32 # Change if out of cuda 
 base_lr = 0.0001
 momentum = 0.09
 weight_decay = 1e-4
@@ -82,7 +82,7 @@ def main(meta,check,anal):
     epoch = 0
     if check != 'None':
 
-        saved = load_checkpoint('checkpoint_%s.pth.tar' % check)
+        saved = load_checkpoint('%s.pth.tar' % check)
         if saved:
             print('Loading checkpoint for epoch %05d with loss %.5f (which is L2 = mean of squares)...' % (saved['epoch'], saved['best_prec1']))
             state = saved['state_dict']
@@ -95,10 +95,11 @@ def main(meta,check,anal):
         else:
             print('Warning: Could not read checkpoint!');
 
+    print('METADATA_PATH', DATASET_PATH + '/00002' )
+    dataTrain = ITrackerData(split='train', imSize = imSize, META_NAME='metadata_%s' % meta,DATASET_PATH=DATASET_PATH,METADATA_PATH=DATASET_PATH + '/00002')
+    dataVal   = ITrackerData(split='val', imSize = imSize, META_NAME='metadata_%s' % meta, DATASET_PATH=DATASET_PATH,METADATA_PATH=DATASET_PATH + '/00002')
+    dataTest   = ITrackerData(split='test', imSize = imSize, META_NAME='metadata_%s' % meta, DATASET_PATH=DATASET_PATH,METADATA_PATH=DATASET_PATH + '/00002')
 
-    dataTrain = ITrackerData(split='train', imSize = imSize, META_NAME='metadata_%s' % meta,DATASET_PATH=DATASET_PATH,METADATA_PATH=DATASET_PATH)
-    dataVal   = ITrackerData(split='test', imSize = imSize, META_NAME='metadata_%s' % meta, DATASET_PATH=DATASET_PATH,METADATA_PATH=DATASET_PATH)
-   
     train_loader = torch.utils.data.DataLoader(
         dataTrain,
         batch_size=batch_size, shuffle=True,
@@ -109,6 +110,10 @@ def main(meta,check,anal):
         batch_size=batch_size, shuffle=False,
         num_workers=workers, pin_memory=True)
 
+    test_loader = torch.utils.data.DataLoader(
+        dataTest,
+        batch_size=batch_size, shuffle=False,
+        num_workers=workers, pin_memory=True)
 
     criterion = nn.MSELoss().cuda()
 
@@ -120,12 +125,14 @@ def main(meta,check,anal):
         
     if doTest:
         validate(val_loader, model, criterion, epoch)
+        #validate(train_loader, model, criterion, epoch)
         return
 
     for epoch in range(0, epoch):
         adjust_learning_rate(optimizer, epoch)
         
-    for epoch in range(epoch, epochs):
+    #for epoch in range(epoch, epochs):
+    for epoch in range(1):
         adjust_learning_rate(optimizer, epoch)
         
         # train for one epoch
@@ -184,9 +191,9 @@ def train(train_loader, model, criterion,optimizer, epoch):
         losses.update(loss.data[0], imFace.size(0))
 
         # compute gradient and do SGD step
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
+        #optimizer.zero_grad()
+        #loss.backward()
+        #optimizer.step()
 
         # measure elapsed time
         batch_time.update(time.time() - end)
@@ -194,7 +201,7 @@ def train(train_loader, model, criterion,optimizer, epoch):
 
 
 
-        if count % 1000 == 0: 
+        if 1==1: #count % 1000 == 0: 
 
             print('Epoch (train): [{0}][{1}/{2}]\t'
                   'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'

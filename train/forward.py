@@ -40,17 +40,17 @@ Booktitle = {IEEE Conference on Computer Vision and Pattern Recognition (CVPR)}
 
 
 # paths 
-CHECKPOINTS_PATH = 'home/apongos/gaze_scripts/train/models/'
+CHECKPOINTS_PATH = '/home/apongos/gaze_scripts/train/models/'
 TRAIN_PATH = '/home/apongos/gaze_scripts/train/'
 DATASET_PATH = '/labs/cliffordlab/data/ipad_art_gaze/EHAS/server_scripts/eyemobile/rawData/'
 
 # params
-workers = 2
+workers = 1
 batch_size = 1
 
 
 
-def main(meta,check,anal):
+def main(meta,check,anal,subj):
     global args, best_prec1, weight_decay, momentum, train_txt, valid_txt
     
     # load model
@@ -73,7 +73,7 @@ def main(meta,check,anal):
 
 
     # generate subject metadata
-    subj_path  = os.path.join(DATASET_PATH,args.subj)
+    subj_path  = os.path.join(DATASET_PATH,subj)
     data_val   = ITrackerData(split='all', imSize = imSize, META_NAME='metadata_%s' % meta,DATASET_PATH=DATASET_PATH,METADATA_PATH=subj_path)
     val_loader = torch.utils.data.DataLoader(data_val,batch_size=batch_size, shuffle=False, num_workers=workers, pin_memory=True)
 
@@ -92,8 +92,8 @@ def main(meta,check,anal):
         # compute output
         output = model(imFace, imEyeL, imEyeR, faceGrid)
         out[i,:] = output.data.cpu().numpy()
-        pdb.set_trace()
-    pdb.set_trace()
+        #pdb.set_trace()
+    #pdb.set_trace()
     sio.savemat(os.path.join(subj_path,'gaze_%s' % check),{'xy':out})
 
 
@@ -102,7 +102,9 @@ def load_checkpoint(filename):
     print(filename)
     if not os.path.isfile(filename):
         return None
-    state = torch.load(filename)
+    #state=torch.load(filename, map_location=lambda storage, location: 'cpu')
+    state = torch.load(filename, map_location=lambda storage, loc: storage)
+    #state = torch.load(filename)
     return state
 
 
@@ -116,5 +118,5 @@ if __name__ == "__main__":
     parser.add_argument('-c','--check',help='Load Checkpoint')
     parser.add_argument('-a','--anal',help='Model Name')
     args = parser.parse_args()
-    main(args.meta,args.check,args.anal)
+    main(args.meta,args.check,args.anal,args.subj)
     print('DONE')
