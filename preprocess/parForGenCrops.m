@@ -16,8 +16,8 @@ count=0;
 parfor i = 1:length(subjs)
  disp(subjs{i})
  %Check if crops have not been made, but detect face has 
- if exist(fullfile(rawPath,subjs{i},['appleFace_' anal]),'dir') == 0 && ...
-	 exist(fullfile(rawPath,subjs{i},['appleFace_' anal '.json']),'file') > 0
+ %if exist(fullfile(rawPath,subjs{i},['appleFace_' anal]),'dir') == 0 && ...
+	% exist(fullfile(rawPath,subjs{i},['appleFace_' anal '.json']),'file') > 0
   %[~,list] = system(['ls ' fullfile(rawPath,subjs{i},['appleFace_' anal])]);	 
   %if length(list) < 3
    try
@@ -27,7 +27,7 @@ parfor i = 1:length(subjs)
 	warning(ME.message)
    end
   %end
- end
+ %end
 end
 disp(['Count ' num2str(count)])
 end

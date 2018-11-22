@@ -133,6 +133,10 @@ class ITrackerData(data.Dataset):
         return grid
 
     def __getitem__(self, index):
+        #if index < 5830:
+        #    print(index)
+        #    return 0,0,0,0,0,0
+        print(self.metadata['labelFrames'][index])
         index = self.indices[index]
 
         # imFacePath = os.path.join(DATASET_PATH, '%05d/appleFace_CV/%05d.jpg' % (self.metadata['labelRecNum'][index], self.metadata['frameIndex'][index]))

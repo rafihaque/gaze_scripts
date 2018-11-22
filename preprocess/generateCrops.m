@@ -1,4 +1,4 @@
-% generateCrops.m
+% generateCgenerateCropsrops.m
 % This script generates all of the image crops required to train iTracker.
 % It will create three subdirectories in each subject directory:
 % "appleFace," "appleLeftEye," and "appleRightEye."

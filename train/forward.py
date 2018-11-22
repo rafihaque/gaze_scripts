@@ -16,6 +16,8 @@ from ITrackerData import ITrackerData
 from ITrackerModel import ITrackerModel
 from shutil import copyfile
 import pdb
+import json
+from os.path import join
 '''
 Train/test code for iTracker.
 
@@ -48,8 +50,6 @@ DATASET_PATH = '/labs/cliffordlab/data/ipad_art_gaze/EHAS/server_scripts/eyemobi
 workers = 1
 batch_size = 1
 
-
-
 def main(meta,check,anal,subj):
     global args, best_prec1, weight_decay, momentum, train_txt, valid_txt
     
@@ -77,10 +77,15 @@ def main(meta,check,anal,subj):
     data_val   = ITrackerData(split='all', imSize = imSize, META_NAME='metadata_%s' % meta,DATASET_PATH=DATASET_PATH,METADATA_PATH=subj_path)
     val_loader = torch.utils.data.DataLoader(data_val,batch_size=batch_size, shuffle=False, num_workers=workers, pin_memory=True)
 
-
+    #Get idx of nans
+    t=json.load(open(join(subj_path,'appleFace_' + anal + '.json')))
+    isVal=t['IsValid']
+    valSize=len(isVal)
+    putPredsHere=[i for i, e in enumerate(isVal) if e != 0]
 
     # forward model
-    out = np.empty((len(data_val.metadata['labelTrain']),2))
+    #out = np.empty((len(data_val.metadata['labelTrain']),2))
+    out=np.empty((valSize,2))
     out[:]=np.nan
     for i, (row, imFace, imEyeL, imEyeR, faceGrid, gaze) in enumerate(val_loader):
         imFace = torch.autograd.Variable(imFace, volatile = True)
@@ -91,11 +96,13 @@ def main(meta,check,anal,subj):
 
         # compute output
         output = model(imFace, imEyeL, imEyeR, faceGrid)
-        out[i,:] = output.data.cpu().numpy()
+        out[putPredsHere[i],:] = output.data.cpu().numpy()
+        #print(i)
         #pdb.set_trace()
     #pdb.set_trace()
+    print(subj_path)
     sio.savemat(os.path.join(subj_path,'gaze_%s' % check),{'xy':out})
-
+    return
 
 def load_checkpoint(filename):
     filename = os.path.join(CHECKPOINTS_PATH, filename)

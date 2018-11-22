@@ -8,7 +8,7 @@
 # define variables
 rawDataPath='/labs/cliffordlab/data/ipad_art_gaze/EHAS/server_scripts/eyemobile/rawData'
 tool_dir='/home/apongos/gaze_scripts/train/'
-c='best_checkpoint_MIT_B16'
+c='MIT_B16'
 
 python "$tool_dir"forward.py -s $sub -m $anal -c $c -a $anal
 
