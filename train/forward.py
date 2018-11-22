@@ -18,6 +18,7 @@ from shutil import copyfile
 import pdb
 import json
 from os.path import join
+import sys
 '''
 Train/test code for iTracker.
 
@@ -50,7 +51,8 @@ DATASET_PATH = '/labs/cliffordlab/data/ipad_art_gaze/EHAS/server_scripts/eyemobi
 workers = 1
 batch_size = 1
 
-def main(meta,check,anal,subj):
+def main2(subj,meta,check,anal):
+    print('In Main2')
     global args, best_prec1, weight_decay, momentum, train_txt, valid_txt
     
     # load model
@@ -116,14 +118,25 @@ def load_checkpoint(filename):
 
 
 
+def main1(args):
+    print('IN MAIN1:',args)
+    parser = argparse.ArgumentParser(description='Training Script')
+    parser.add_argument('-s','--subj',help='Load Subject')
+    parser.add_argument('-m','--meta',help='Load Metadata')
+    parser.add_argument('-c','--check',help='Load Checkpoint')
+    parser.add_argument('-a','--anal',help='Model Name')
+    args = parser.parse_args(args)
+    #main2(args.meta,args.check,args.anal,args.subj)
+    main2(args.subj,args.meta,args.check,args.anal)
 
 if __name__ == "__main__":
     #Set a default path to research
-    parser = argparse.ArgumentParser(description='Training Script')
-    parser.add_argument('-s','--subj',help='Load Subject')    
-    parser.add_argument('-m','--meta',help='Load Metadata')    
-    parser.add_argument('-c','--check',help='Load Checkpoint')
-    parser.add_argument('-a','--anal',help='Model Name')
-    args = parser.parse_args()
-    main(args.meta,args.check,args.anal,args.subj)
-    print('DONE')
+    main1(sys.argv[1:])
+    #parser = argparse.ArgumentParser(description='Training Script')
+    #parser.add_argument('-s','--subj',help='Load Subject')    
+    #parser.add_argument('-m','--meta',help='Load Metadata')    
+    #parser.add_argument('-c','--check',help='Load Checkpoint')
+    #parser.add_argument('-a','--anal',help='Model Name')
+    #args = parser.parse_args()
+    #main(args.meta,args.check,args.anal,args.subj)
+    #print('DONE')

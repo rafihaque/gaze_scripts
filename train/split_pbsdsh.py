@@ -2,16 +2,16 @@
 import os
 from numpy import linspace
 from math import floor
-from forward import main
+import forward
 import multiprocessing as mp
 
 def test(meta,check,anal,subj):
     print('TEST:',meta,check,anal,subj)
     return
 
-def main():
+def ppool():
     #Grab parallel num
-    PBS_VNODENUM=int(os.environ["PBS_VNODENUM"])
+    PBS_VNODENUM=0#int(os.environ["PBS_VNODENUM"])
 
     #Get list of subjs
     rawDataPath="/labs/cliffordlab/data/ipad_art_gaze/EHAS/server_scripts/eyemobile/rawData/"
@@ -34,13 +34,17 @@ def main():
 
     doList=subList[intervals[PBS_VNODENUM]:intervals[PBS_VNODENUM+1]]
 
-    pool = mp.Pool(processes=10)
-
-    results=[pool.apply_async(main, args=('CV','MIT_B16','CV',sub)) for sub in doList]
+    pool = mp.pool.ThreadPool(processes=2)
+    #argSets=[[{"s":sub,"m":'CV',"c":'MIT_B16',"a":'CV'}] for sub in doList]
+    argSets=[["-s",sub,"-m","CV","-c","MIT_B16","-a","CV"] for sub in doList]
+    print(argSets)
+    #results=[pool.apply_async(forward.main1, args=(['CV','MIT_B16','CV',sub]) for sub in doList]
+    #results=pool.apply_async(forward.main,None,argSets)
+    results=pool.map(forward.main1,argSets)
 
     #pool.wait(timeout=10)
     #parpool these subjects
     #main(meta='CV',check='MIT_B16',anal='CV',subj=)
 
 if __name__ == "__main__":
-    main()
+    ppool()
