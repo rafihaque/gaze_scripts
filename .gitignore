@@ -1,1 +1,4 @@
 **/outPutFiles
+**/virtEnvPy27
+*.pyc
+*core.*

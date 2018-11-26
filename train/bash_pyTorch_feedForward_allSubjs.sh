@@ -27,7 +27,7 @@ echo subjectArray "${subjectArray[@]}"
 
 #exit
 declare -a jobID
-delay=15
+delay=50
 i=0
 #length=5
 length=${#subjectArray[@]}
@@ -41,7 +41,7 @@ while [ $i -lt $length ]; do
 	fi
 	i=$((i + 1))
 	echo $i
-	sleep 1
+	#sleep 1
 done
 
 #echo $#{subjectArray[@]:0:3}

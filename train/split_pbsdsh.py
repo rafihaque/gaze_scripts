@@ -11,7 +11,7 @@ def test(meta,check,anal,subj):
 
 def ppool():
     #Grab parallel num
-    PBS_VNODENUM=0#int(os.environ["PBS_VNODENUM"])
+    PBS_VNODENUM=int(os.environ["PBS_VNODENUM"])
 
     #Get list of subjs
     rawDataPath="/labs/cliffordlab/data/ipad_art_gaze/EHAS/server_scripts/eyemobile/rawData/"
@@ -34,17 +34,11 @@ def ppool():
 
     doList=subList[intervals[PBS_VNODENUM]:intervals[PBS_VNODENUM+1]]
 
-    pool = mp.pool.ThreadPool(processes=2)
-    #argSets=[[{"s":sub,"m":'CV',"c":'MIT_B16',"a":'CV'}] for sub in doList]
+    pool = mp.pool.ThreadPool(processes=5)
     argSets=[["-s",sub,"-m","CV","-c","MIT_B16","-a","CV"] for sub in doList]
-    print(argSets)
-    #results=[pool.apply_async(forward.main1, args=(['CV','MIT_B16','CV',sub]) for sub in doList]
-    #results=pool.apply_async(forward.main,None,argSets)
+    #print(argSets)
     results=pool.map(forward.main1,argSets)
 
-    #pool.wait(timeout=10)
-    #parpool these subjects
-    #main(meta='CV',check='MIT_B16',anal='CV',subj=)
 
 if __name__ == "__main__":
     ppool()

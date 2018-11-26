@@ -5,6 +5,10 @@
 #PBS -o outPutFiles
 #PBS -e outPutFiles
 
+#Activate environment
+source /home/apongos/gaze_scripts/virtEnvPy27/bin/activate
+export CUDA_VISIBLE_DEVICES=""
+
 # define variables
 rawDataPath='/labs/cliffordlab/data/ipad_art_gaze/EHAS/server_scripts/eyemobile/rawData'
 tool_dir='/home/apongos/gaze_scripts/train/'

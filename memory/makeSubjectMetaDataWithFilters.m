@@ -176,8 +176,21 @@ else
 	TBool= boolXYEyesMoved(1:lt) & MSEBool(1:lt)';% & noNAN;
 end
 
+%Get subjlabelVal
+ttv=load(fullfile(dataDir,sub,['metadata_' nameOfExperiment '.mat']));
+validFullErrIdx=reconstructArrayWithNans(s.appleFace.IsValid,ttv.labelVal);
+trainFullErrIdx=reconstructArrayWithNans(s.appleFace.IsValid,ttv.labeTrain);
+%Only look at val when calculating error
+validCalErrIdx=validFullErrIdx(calStrt2Fin);
+trainCalErrIdx=trainFullErrIdx(calStrt2Fin);
+
+
+VBool=TBool(:) & validCalErrIdx;
+TrainBool=TBool(:) & trainCalErrIdx;
+keyboard
+
 %Store variables to make metaData construction easier
-combBool = TBool(:) & s.appleFace.IsValid(calStrt2Fin);
+combBool = TrainBool(:) & s.appleFace.IsValid(calStrt2Fin);
 ev.FilteredTrueX=Tx(combBool);
 ev.FilteredTrueY=Ty(combBool);
 sOrient=orient(calStrt2Fin);
@@ -188,10 +201,10 @@ ev.FilteredCalibFrameIndex=calFaceFrameLabels(combBool)';
     						device(combBool), screenw(combBool), screenh(combBool), true)
 [ev.TrueCamX, ev.TrueCamY] = screen2cam(Tx, Ty, sOrient(1:length(Ty)), ...
 					device(1:length(Ty)), screenw(1:length(Ty)), screenh(1:length(Ty)), true)
-selectedX=x2(TBool);
-selectedY=y2(TBool);
-selectedTX=Tx(TBool);
-selectedTY=Ty(TBool);
+selectedX=x2(TrainBool);
+selectedY=y2(TrainBool);
+selectedTX=Tx(TrainBool);
+selectedTY=Ty(TrainBool);
 
 selectedY=selectedY(selectedTY<650*Pts2cm);
 selectedX=selectedX(selectedTY<650*Pts2cm);
@@ -235,8 +248,8 @@ MdlY = fitrsvm(selectedY(1:mn),selectedTY(1:mn));
      boolXYFixOnly=f.bool;
     end
     if testMSEFilter==true
-     xDist =  (Tx-x2).^2;
-     yDist = (Ty-y2).^2;
+     xDist =  (Tx(find(VBool))-x2(find(VBool).^2;
+     yDist = (Tyfind(VBool-y2find(VBool).^2;
      EDist = sqrt(xDist+yDist);
 
      thresholdE=prctile(EDist,prctileThreshold);
@@ -246,11 +259,11 @@ MdlY = fitrsvm(selectedY(1:mn),selectedTY(1:mn));
     lt=min(length(boolXYEyesMoved),length(boolXYFixOnly));
 
     %Boolean to select only the later half of the calibration dots
-    TF=[false(1,ceil(lt/2)) true(1,ceil(lt/2))];
+    %TF=[false(1,ceil(lt/2)) true(1,ceil(lt/2))];
 
     %Combine booleans
     TBool2= boolXYEyesMoved(1:lt) & boolXYFixOnly(1:lt) &...
-        MSEBool' & TF(1:lt);
+        MSEBool' & VBool; %TF(1:lt) & VBool;
 
 
     %Construct raw EucX
