@@ -1,1 +1,0 @@
-cd /home/haqueru/gaze_scripts/train; python main.py --meta MIT --check MIT_B16M09 --anal MIT_B16M09
